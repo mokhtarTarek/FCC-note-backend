@@ -1,10 +1,16 @@
 // imports Node's built-in web server module
 const express = require('express')
-const cors=require('cors')//cors middleware to allow access to this origin
-//create express app
 const app = express()
+const cors=require('cors')//cors middleware to allow access to this origin
+
+
+app.use(express.static('build'))
+app.use(cors())
+app.use(express.json());
 
 //########################costums middleswares#############
+//middlewares are functions that handles request and response objects
+//using json-parser middleware : to parse raw data
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
@@ -12,15 +18,10 @@ const requestLogger = (request, response, next) => {
   console.log('---')
   next()
 }
-
+app.use(requestLogger);
 //#########################################################
 
-//middlewares are functions that handles request and response objects
-//using json-parser middleware : to parse raw data
-app.use(cors())
-app.use(express.json());
-app.use(requestLogger);
-//app.use(unknownEndpoint)
+
 
 let notes = [
     {
@@ -43,17 +44,11 @@ let notes = [
     }
   ]
   
-const generatedId = ()=>{
-    const maxId = notes.length > 0?
-    //spread notes _id
-    Math.max(...notes.map(n=>n.id))
-    :0
-    return maxId + 1 
-}
 
-app.get('/',(req,res)=>{
-    res.send('<h1>hello fucking world</h1>')
-})
+
+// app.get('/',(req,res)=>{
+//     res.send('<h1>hello fucking world</h1>')
+// })
 app.get('/api/notes',(req,res)=>{
     res.json(notes)
 })
@@ -68,15 +63,23 @@ app.get('/api/notes/:id',(req,res)=>{
     }
 })
 
+
 app.delete('/api/notes/:id',(req,res)=>{
     const id = Number(req.params.id)
     //re-assign the array
     notes = notes.filter(n=>n.id !== id)
     res.status(204).end();
 })
+const generatedId = ()=>{
+  const maxId = notes.length > 0?
+  //spread notes _id
+  Math.max(...notes.map(n=>n.id))
+  :0
+  return maxId + 1 
+}
 
 app.post('/api/notes',(req,res)=>{
-   
+   const body = req.body
     if(!body.content){
         //calling return is crucial, otherwise the code will
         //executed till the end
