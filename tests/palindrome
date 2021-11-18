@@ -1,0 +1,21 @@
+//import the functions to be tested
+//Jest expects by default that the names of test files contain .test
+const palindrome = require('../utils/for_testing').palindrome
+//toBe : compare 2 strings
+test('palindrome of a', () => {
+  const result = palindrome('a')
+
+  expect(result).toBe('a')
+})
+
+test('palindrome of react', () => {
+  const result = palindrome('react')
+
+  expect(result).toBe('tcaer')
+})
+
+test('palindrome of releveler', () => {
+  const result = palindrome('releveler')
+
+  expect(result).toBe('releveler')
+})
